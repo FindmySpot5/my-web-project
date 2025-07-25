@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>บันทึกพิกัดและเลือกโซนที่จอดรถ</title>
+  <script>
+    const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbyjuPn1ej9BrCo0Rnz3UPnN8uN_n_g6m-PrKGSbW1wxv7u_RM-e-rperYTAh_ZiEzn1/exec';
+
+    function sendLocation() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const zone = document.getElementById('zone').value;
+
+      if (!name) {
+        alert('กรุณากรอกชื่อ');
+        return;
+      }
+      if (!email) {
+        alert('กรุณากรอกอีเมล');
+        return;
+      }
+      if (!zone) {
+        alert('กรุณาเลือกโซนที่จอดรถ');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(async function(position) {
+        const data = {
+          type: 'location',
+          username: name,
+          email: email,
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+          zone: zone
+        };
+
+        await fetch(DEPLOY_URL, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+
+        alert('บันทึกพิกัดเรียบร้อยแล้ว ขอบคุณครับ!');
+      }, function(error) {
+        alert('ไม่สามารถรับพิกัดได้: ' + error.message);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h2>กรอกข้อมูลและเลือกโซนที่จอดรถ</h2>
+
+  <label>เลือกโซนที่จอดรถ:</label><br>
+  <select id="zone">
+    <option value="">-- กรุณาเลือกโซน --</option>
+    <option value="โซน 1">โซน 1</option>
+    <option value="โซน 2">โซน 2</option>
+    <option value="โซน 3">โซน 3</option>
+    <option value="โซน 4">โซน 4</option>
+    <option value="โซน 5">โซน 5</option>
+    <option value="โซน 6">โซน 6</option>
+    <option value="โซน 7">โซน 7</option>
+  </select><br><br>
+
+  <input type="text" id="name" placeholder="ชื่อของคุณ"><br><br>
+  <input type="email" id="email" placeholder="อีเมลของคุณ"><br><br>
+
+  <button onclick="sendLocation()">บันทึกพิกัด</button>
+</body>
+</html>
