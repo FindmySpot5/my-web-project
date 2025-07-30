@@ -1,7 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <title>ระบบบันทึกตำแหน่งการจอดรถในวิทยาลัยอาชีวศึกษาพิษณุโลก</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ระบบบันทึกตำแหน่งการจอดรถ</title>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f2f5f7;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #1a237e;
+      text-align: center;
+    }
+
+    select, input, button {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    /* Popup modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      max-width: 90%;
+    }
+
+    .modal-content h3 {
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 20px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>ระบบบันทึกตำแหน่งการจอดรถ<br>วิทยาลัยอาชีวศึกษาพิษณุโลก</h2>
+
+  <select id="zone">
+    <option value="">-- กรุณาเลือกโซน --</option>
+    <option value="โซน 1">โซน 1</option>
+    <option value="โซน 2">โซน 2</option>
+    <option value="โซน 3">โซน 3</option>
+    <option value="โซน 4">โซน 4</option>
+    <option value="โซน 5">โซน 5</option>
+    <option value="โซน 6">โซน 6</option>
+    <option value="โซน 7">โซน 7</option>
+  </select>
+
+  <input type="text" id="name" placeholder="ชื่อของคุณ">
+  <input type="email" id="email" placeholder="อีเมลของคุณ">
+  <button onclick="sendLocation()">บันทึกพิกัด</button>
+
+  <!-- Popup Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <h3>✅ บันทึกพิกัดเรียบร้อยแล้ว</h3>
+      <p>ขอบคุณสำหรับการกรอกข้อมูล</p>
+      <button class="close-btn" onclick="closeModal()">ปิด</button>
+    </div>
+  </div>
+
   <script>
     const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbyjuPn1ej9BrCo0Rnz3UPnN8uN_n_g6m-PrKGSbW1wxv7u_RM-e-rperYTAh_ZiEzn1/exec';
 
@@ -33,36 +145,31 @@
           zone: zone
         };
 
-        await fetch(DEPLOY_URL, {
-          method: 'POST',
-          body: JSON.stringify(data)
-        });
+        try {
+          await fetch(DEPLOY_URL, {
+            method: 'POST',
+            body: JSON.stringify(data)
+          });
 
-        alert('บันทึกพิกัดเรียบร้อยแล้ว ขอบคุณครับ!');
+          showModal(); // แสดง popup
+        } catch (error) {
+          alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        }
       }, function(error) {
         alert('ไม่สามารถรับพิกัดได้: ' + error.message);
       });
     }
+
+    function showModal() {
+      document.getElementById('successModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').style.display = 'none';
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('zone').value = '';
+    }
   </script>
-</head>
-<body>
-  <h2>กรอกข้อมูลและเลือกโซนที่จอดรถ</h2>
-
-  <label>เลือกโซนที่จอดรถ:</label><br>
-  <select id="zone">
-    <option value="">-- กรุณาเลือกโซน --</option>
-    <option value="โซน 1">โซน 1</option>
-    <option value="โซน 2">โซน 2</option>
-    <option value="โซน 3">โซน 3</option>
-    <option value="โซน 4">โซน 4</option>
-    <option value="โซน 5">โซน 5</option>
-    <option value="โซน 6">โซน 6</option>
-    <option value="โซน 7">โซน 7</option>
-  </select><br><br>
-
-  <input type="text" id="name" placeholder="ชื่อของคุณ"><br><br>
-  <input type="email" id="email" placeholder="อีเมลของคุณ"><br><br>
-
-  <button onclick="sendLocation()">บันทึกพิกัด</button>
 </body>
 </html>
